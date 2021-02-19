@@ -2,7 +2,7 @@
 
 #-------------------------------------------------------------------+
 #
-# Advent Of Code - Day 6 - Part 1
+# Advent Of Code - Day 6 - Part1 & Part 2
 #
 #-------------------------------------------------------------------+
 
@@ -49,22 +49,18 @@ class Reader:
       group_answers.append(entry) # also append last one
       return group_answers
  
-#broken 
-   def count_unique_answers(self, group_answers):
-      count = []
+   def count_any_answers(self, group_answers):
+      counter = 0
       for answers in group_answers:
-         counter = 0
+         combined_answer = ''.join(answers)
          for i in letters :
-            for entry in answers:
-               if i in entry :
-                  counter += 1
-            count.append(counter)
-      return sum(count)
+            if i in combined_answer :
+               counter += 1
+      return counter
 
    def count_common_answers(self, group_answers):
-      count = []
+      counter = 0
       for answers in group_answers:
-         counter = 0
          for i in letters :
             letter_counter = 0
             for entry in answers:
@@ -72,8 +68,7 @@ class Reader:
                   letter_counter += 1
             if letter_counter == len(answers):
                counter +=1
-         count.append(counter)
-      return sum(count)
+      return counter
       
 #-------------------------------------------------------------------+
 #	startup
@@ -85,11 +80,12 @@ if __name__ == "__main__":
    reader = Reader()
    Lines = reader.load_data("input6.txt")
    answers = reader.split_answers(Lines)
-   print answers
+
+   unique_count = reader.count_any_answers(answers)
+   print 'Sum of "Anyone answered yes" = ' + str(unique_count)
    
    count = reader.count_common_answers(answers)
-   
-   print 'sum of common counts = ' + str(count)
+   print 'Sum of "All of group answered yes" = ' + str(count)
    
    print(separator)
 
