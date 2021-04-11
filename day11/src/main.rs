@@ -15,8 +15,88 @@ L.LLLLL.LL";
 fn main() {
     let input = fs::read_to_string("src/input.txt").expect("Something went wrong reading the file");
     
-    // let input = _RAW_INP1.to_string();
+    let (seats, row_len, col_len) = interpret_text(input);
     
+    let nr_occupied_seats = puzzle1(col_len, row_len, &seats);    
+    println!("puzzle 1 count = {}", nr_occupied_seats);
+
+    let nr_occupied_seats = puzzle2(col_len, row_len, &seats);
+    println!("puzzle 2 count = {}", nr_occupied_seats);
+}
+
+fn puzzle1(col_len: usize, row_len: usize, seats: &Vec<bool>) -> usize {
+    let mut occupied_new:Vec<bool> = vec![false;seats.len()];
+    let mut occupied:Vec<bool> = vec![false;seats.len()];
+    let mut stable = false;
+    let mut run_id = 0;
+    while !stable {
+        for col in 0..col_len{
+            for row in 0..row_len{
+                let index = idx(col, row, col_len);
+                if seats[index] {
+                    if occupied[index]
+                    {
+                        if count_neighbours(&occupied, col, row, row_len, col_len) >= 4 {
+                            occupied_new[index] = false;
+                        }  
+                    }
+                    else
+                    {
+                        if count_neighbours(&occupied, col, row, row_len, col_len) == 0 {
+                            occupied_new[index] = true;
+                        }
+                    }
+                }
+            }
+        }
+        if occupied == occupied_new {
+            stable = true;
+        }
+        run_id+=1;
+        occupied = occupied_new.clone();
+    }
+    println!("Number of runs = {}",run_id);
+    let nr_occupied_seats = occupied.iter().filter(|&i|*i == true).count();
+    nr_occupied_seats
+}
+
+fn puzzle2(col_len: usize, row_len: usize, seats: &Vec<bool>) -> usize {
+    let mut occupied_new:Vec<bool> = vec![false;seats.len()];
+    let mut occupied:Vec<bool> = vec![false;seats.len()];
+    let mut stable = false;
+    let mut run_id = 0;
+    while !stable {
+        for col in 0..col_len{
+            for row in 0..row_len{
+                let index = idx(col, row, col_len);
+                if seats[index] {
+                    if occupied[index]
+                    {
+                        if count_neighbours_in_sight(&seats, &occupied, col, row, row_len, col_len) >= 5 {
+                            occupied_new[index] = false;
+                        }  
+                    }
+                    else
+                    {
+                        if count_neighbours_in_sight(&seats, &occupied, col, row, row_len, col_len) == 0 {
+                            occupied_new[index] = true;
+                        }
+                    }
+                }
+            }
+        }
+        if occupied == occupied_new {
+            stable = true;
+        }
+        run_id+=1;
+        occupied = occupied_new.clone();
+    }
+    println!("{}",run_id);
+    let nr_occupied_seats = occupied.iter().filter(|&i|*i == true).count();
+    nr_occupied_seats
+}
+
+fn interpret_text(input: String) -> (Vec<bool>, usize, usize) {
     let seats: Vec<_> = input
         .chars()
         .filter(|c| *c != '\n')
@@ -25,85 +105,16 @@ fn main() {
     let row_len = input.split('\n').count();
     let col_len = seats.len() / row_len;
     println!("row length = {}, collumn length = {}", row_len, col_len);
-    
+
     // Try to create 2D vector
     // let seats2d = seats.chunks(row_len);
     // println!("{:?}", seats2d);
     // let mut occupied:Vec<Vec<bool>> = vec![vec![false;seats.len()]];
-    
-    let mut occupied_new:Vec<isize> = vec![0;seats.len()];
-    let mut occupied:Vec<isize> = vec![0;seats.len()];
-    let mut stable = false;
-    let mut run_id = 0;
-    while !stable {
-        for col in 0..col_len{
-            for row in 0..row_len{
-                let index = idx(col, row, col_len);
-                if seats[index] {
-                    if occupied[index] == 1
-                    {
-                        if count_neighbours(&occupied, col, row, row_len, col_len) >= 4 {
-                            occupied_new[index] = 0;
-                        }  
-                    }
-                    else
-                    {
-                        if count_neighbours(&occupied, col, row, row_len, col_len) == 0 {
-                            occupied_new[index] = 1;
-                        }
-                    }
-                }
-            }
-        }
-        if occupied == occupied_new {
-            stable = true;
-        }
-        run_id+=1;
-        println!("{}",run_id);
-        occupied = occupied_new.clone();
-    }
-    //println!("seat occupation = {:?}", occupied);
-    println!("count = {}", occupied.iter().filter(|&i|*i == 1).count());
 
-    // -------------
-    // Puzzle 2
-    // -------------
-    // reset occupancy
-    occupied_new = vec![0;seats.len()];
-    occupied = vec![0;seats.len()];
-    stable = false;
-    run_id = 0;
-    while !stable {
-        for col in 0..col_len{
-            for row in 0..row_len{
-                let index = idx(col, row, col_len);
-                if seats[index] {
-                    if occupied[index] == 1
-                    {
-                        if count_neighbours_in_sight(&seats, &occupied, col, row, row_len, col_len) >= 5 {
-                            occupied_new[index] = 0;
-                        }  
-                    }
-                    else
-                    {
-                        if count_neighbours_in_sight(&seats, &occupied, col, row, row_len, col_len) == 0 {
-                            occupied_new[index] = 1;
-                        }
-                    }
-                }
-            }
-        }
-        if occupied == occupied_new {
-            stable = true;
-        }
-        run_id+=1;
-        println!("{}",run_id);
-        occupied = occupied_new.clone();
-    }
-    println!("count = {}", occupied.iter().filter(|&i|*i == 1).count());
+    (seats, row_len, col_len)
 }
 
-fn count_neighbours(occupied:&Vec<isize>, col:usize, row:usize, row_len:usize, col_len:usize) -> isize
+fn count_neighbours(occupied:&Vec<bool>, col:usize, row:usize, row_len:usize, col_len:usize) -> isize
 {
     let mut neighbour_count=0;
     let row = row as isize;
@@ -112,7 +123,9 @@ fn count_neighbours(occupied:&Vec<isize>, col:usize, row:usize, row_len:usize, c
         for cl in (col-1)..=(col+1) {
             if (0 <= rw && rw < row_len as isize) && (0 <= cl && cl < col_len as isize) {
                 if !(rw == row && cl == col) {
-                    neighbour_count += occupied[idx(cl as usize,rw as usize,  col_len)];
+                    if occupied[idx(cl as usize,rw as usize,  col_len)] {
+                        neighbour_count += 1;
+                    }
                 }
                 
             }
@@ -122,7 +135,7 @@ fn count_neighbours(occupied:&Vec<isize>, col:usize, row:usize, row_len:usize, c
     return neighbour_count;
 }
 
-fn count_neighbours_in_sight(seats:&Vec<bool>, occupied:&Vec<isize>, col:usize, row:usize, row_len:usize, col_len:usize) -> isize
+fn count_neighbours_in_sight(seats:&Vec<bool>, occupied:&Vec<bool>, col:usize, row:usize, row_len:usize, col_len:usize) -> isize
 {
     let mut neighbour_count=0;
     // create clockwise directions (col,row)
@@ -133,7 +146,7 @@ fn count_neighbours_in_sight(seats:&Vec<bool>, occupied:&Vec<isize>, col:usize, 
     return neighbour_count;
 }
 
-fn search_in_direction(seats:&Vec<bool>, occupied:&Vec<isize>, col:usize, row:usize, row_len:usize, col_len:usize, direction:&(isize, isize)) -> isize
+fn search_in_direction(seats:&Vec<bool>, occupied:&Vec<bool>, col:usize, row:usize, row_len:usize, col_len:usize, direction:&(isize, isize)) -> isize
 {
     let mut at_edge = false;
     let mut rw = row as isize;
@@ -145,7 +158,7 @@ fn search_in_direction(seats:&Vec<bool>, occupied:&Vec<isize>, col:usize, row:us
         {
             if seats[idx(cl as usize, rw as usize, col_len)] 
             {
-                if occupied[idx(cl as usize, rw as usize, col_len)] == 1
+                if occupied[idx(cl as usize, rw as usize, col_len)]
                 {
                     return 1;
                 }
@@ -165,6 +178,7 @@ fn search_in_direction(seats:&Vec<bool>, occupied:&Vec<isize>, col:usize, row:us
 
 fn idx(col:usize, row:usize, col_len:usize)->usize
 {
+    // Index first on collumn, then on row
     return row * col_len + col;
 }
 
@@ -172,6 +186,25 @@ fn idx(col:usize, row:usize, col_len:usize)->usize
 mod tests {
     use super::*;
 
+    #[test]
+    fn verify_puzzle_1()
+    {
+        let input = _RAW_INP1.to_string();
+    
+        let (seats, row_len, col_len) = interpret_text(input);
+        let nr_occupied_seats = puzzle1(col_len, row_len, &seats);
+        assert_eq!(37, nr_occupied_seats)
+    }
+
+    #[test]
+    fn verify_puzzle_2()
+    {
+        let input = _RAW_INP1.to_string();
+    
+        let (seats, row_len, col_len) = interpret_text(input);
+        let nr_occupied_seats = puzzle2(col_len, row_len, &seats);
+        assert_eq!(26, nr_occupied_seats)
+    }
     
     #[test]
     fn verify_count_neighbors_in_sieght() {
@@ -180,17 +213,16 @@ mod tests {
         //  L . . . L
         //  L L T L #
         //  L L L L L
-        //  L L L L L
         let col_len = 5;
-        let row_len = 5;
-        let mut seats = vec![true;25];
+        let row_len = 4;
+        let mut seats = vec![true;20];
         seats[6] = false;
         seats[7] = false;
         seats[8] = false;
-        let mut occupied = vec![0;25];
+        let mut occupied = vec![false;20];
         
-        occupied[0] = 1;
-        occupied[2] = 1;
+        occupied[0] = true;
+        occupied[2] = true;
         occupied[idx(4, 2, col_len)];
         let neighbours = count_neighbours_in_sight(&seats, &occupied, 2, 2, row_len, col_len);
         assert_eq!(2, neighbours);
@@ -205,27 +237,27 @@ mod tests {
         // row length
 
         // bottom row
-        let neighbours = count_neighbours(&vec![1;9], 2, 1, 3, 3);
+        let neighbours = count_neighbours(&vec![true;9], 2, 1, 3, 3);
         assert_eq!(5, neighbours);
 
         // top row
-        let neighbours = count_neighbours(&vec![1;9], 0, 1, 3, 3);
+        let neighbours = count_neighbours(&vec![true;9], 0, 1, 3, 3);
         assert_eq!(5, neighbours);
 
         // top left corner
-        let neighbours = count_neighbours(&vec![1;9], 0, 0, 3, 3);
+        let neighbours = count_neighbours(&vec![true;9], 0, 0, 3, 3);
         assert_eq!(3, neighbours);
 
         // top left corner
-        let neighbours = count_neighbours(&vec![1;9], 2, 2, 3, 3);
+        let neighbours = count_neighbours(&vec![true;9], 2, 2, 3, 3);
         assert_eq!(3, neighbours);
 
         // Exactly in the middle
-        let neighbours = count_neighbours(&vec![1;9], 1, 1, 3, 3);
+        let neighbours = count_neighbours(&vec![true;9], 1, 1, 3, 3);
         assert_eq!(8, neighbours);
         
         // Subset of data
-        let neighbours = count_neighbours(&vec![0, 0, 0, 0, 0, 0, 1, 1, 1], 1, 1, 3, 3);
+        let neighbours = count_neighbours(&vec![false, false, false, false, false, false, true, true, true], 1, 1, 3, 3);
         assert_eq!(3, neighbours);
     }
 
