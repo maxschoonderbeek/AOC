@@ -29,9 +29,9 @@ fn puzzle1(jolt_input: &Vec<usize>) -> (Vec<i32>, i32) {
     (jumps, multiplication)
 }
 
-fn puzzle2(jolt_input: &Vec<usize>) -> i32 {
+fn puzzle2(jolt_input: &Vec<usize>) -> i64 {
 
-    let mut  jolt_list = vec![0;jolt_input.len()];
+    let mut  jolt_list: Vec<i64> = vec![0;jolt_input.len()];
     jolt_list[0] = 1;
     jolt_list[1] = 1;
     jolt_list[2] = 2;
