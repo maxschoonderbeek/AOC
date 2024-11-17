@@ -1,9 +1,13 @@
 import re
+import os
 
 correct = 0
 incorrect = 0 
 
-file1 = open('input.txt', 'r') 
+script_dir = os.path.dirname(__file__)
+rel_path = 'input.txt'
+abs_file_path = os.path.join(script_dir, rel_path)
+file1 = open(abs_file_path, 'r') 
 Lines = file1.readlines() 
   
 for line in Lines:
