@@ -18,20 +18,20 @@ import numpy as np
 
 
 class Reader:
-   def __init__(self):
-      pass
+    def __init__(self):
+        pass
 
-   def load_data(self, filename):
-      try:
-         script_dir = os.path.dirname(__file__)
-         abs_file_path = os.path.join(script_dir, filename) 
-         file =  open(abs_file_path)
-         entries = file.readlines()
-      except Exception as e:
-         print("Exception: {}".format(e))
-         return [""]
-      else:
-         return entries
+    def load_data(self, filename):
+        try:
+            script_dir = os.path.dirname(__file__)
+            abs_file_path = os.path.join(script_dir, filename) 
+            file =  open(abs_file_path)
+            entries = file.readlines()
+        except Exception as e:
+            print("Exception: {}".format(e))
+            return [""]
+        else:
+            return entries
 
 #-------------------------------------------------------------------+
 #	startup
