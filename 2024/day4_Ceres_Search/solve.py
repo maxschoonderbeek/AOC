@@ -1,13 +1,14 @@
 import os
 import re
+import sys
+from pathlib import Path
 
-def reader(filename):
-    script_dir = os.path.dirname(__file__)
-    abs_file_path = os.path.join(script_dir, filename)
-    with open(abs_file_path) as f:
-        lines = f.readlines()
+# Add the parent directory to sys.path so we can import Facilities
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.append(str(project_root))
 
-    return lines
+from Facilities.reader import reader
 
 def writer(data):
     script_dir = os.path.dirname(__file__)

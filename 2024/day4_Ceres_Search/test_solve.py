@@ -27,8 +27,9 @@ class TestCases(unittest.TestCase):
 
         r = re.compile(r"(?=(333))")
         rows = 4
+        nr_of_matches = 0
 
-        match_bdiag(rows, matrix, r, data)
+        nr_of_matches = match_bdiag(rows, matrix, r, data, nr_of_matches)
         self.assertEqual(matrix, expected)
 
     def test_match_b_diag_44(self):
@@ -38,8 +39,9 @@ class TestCases(unittest.TestCase):
 
         r = re.compile(r"(?=(44))")
         rows = 4
+        nr_of_matches = 0
 
-        match_bdiag(rows, matrix, r, data)
+        nr_of_matches = match_bdiag(rows, matrix, r, data, nr_of_matches)
         self.assertEqual(matrix, expected)
 
     def test_f_diag(self):
@@ -57,8 +59,9 @@ class TestCases(unittest.TestCase):
         expected = [[1, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
         r = re.compile(r"(?=(0))")
         col = 3
+        nr_of_matches = 0
 
-        match_fdiag(col, matrix, r, data)
+        nr_of_matches = match_fdiag(col, matrix, r, data, nr_of_matches)
         self.assertEqual(matrix, expected)
 
     def test_match_f_diag_11(self):
@@ -67,8 +70,9 @@ class TestCases(unittest.TestCase):
         expected = [[0, 1, 0], [1, 0, 0], [0, 0, 0], [0, 0, 0]]
         r = re.compile(r"(?=(11))")
         col = 3
+        nr_of_matches = 0
 
-        match_fdiag(col, matrix, r, data)
+        nr_of_matches = match_fdiag(col, matrix, r, data, nr_of_matches)
         self.assertEqual(matrix, expected)
 
     def test_match_f_diag_333(self):
@@ -77,8 +81,9 @@ class TestCases(unittest.TestCase):
         expected = [[0, 0, 0], [0, 0, 1], [0, 1, 0], [1, 0, 0]]
         r = re.compile(r"(?=(333))")
         col = 3
+        nr_of_matches = 0
 
-        match_fdiag(col, matrix, r, data)
+        nr_of_matches = match_fdiag(col, matrix, r, data, nr_of_matches)
         self.assertEqual(matrix, expected)
 
     #@unittest.skip("skip")
